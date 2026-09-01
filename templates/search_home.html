@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{# 검색 홈. 받는 값: items(검색 결과)·categories·f(직전 입력값)·connector·sort·sql.
+   상단은 검색 폼(제목/카테고리/가격 + NOT 체크 + AND·OR + 정렬), 그 아래 details 에 '실행된 SQL'을
+   펼쳐 보여 주고, 카드 그리드로 결과를 나열한다(대표 사진 있으면 썸네일, 없으면 '이미지 없음'). #}
+{% block title %}물품 검색{% endblock %}
+{% block content %}
+<h1>오늘의 추천 매물</h1>
+<p class="page-subtitle">이웃들이 올린 따끈따끈한 중고 물품들을 확인해보세요.</p>
+
+<form class="search-form" method="get" action="{{ url_for('search_home') }}">
+  <div class="cond">
+    <label>제목 <input type="text" name="title" value="{{ f.get('title','') }}"></label>
+    <label class="not"><input type="checkbox" name="title_not" value="1" {{ 'checked' if f.get('title_not')=='1' }}> NOT</label>
+  </div>
+  <div class="cond">
+    <label>카테고리
+      <select name="category">
+        <option value="">전체</option>
+        {% for c in categories %}
+        <option value="{{ c }}" {{ 'selected' if f.get('category')==c }}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="not"><input type="checkbox" name="category_not" value="1" {{ 'checked' if f.get('category_not')=='1' }}> NOT</label>
+  </div>
+  <div class="cond">
+    <label>가격
+      <input type="number" name="price_min" placeholder="최소" value="{{ f.get('price_min','') }}">
+      ~
+      <input type="number" name="price_max" placeholder="최대" value="{{ f.get('price_max','') }}">
+    </label>
+    <label class="not"><input type="checkbox" name="price_not" value="1" {{ 'checked' if f.get('price_not')=='1' }}> NOT</label>
+  </div>
+  <div class="cond">
+    <label>조건 결합
+      <select name="connector">
+        <option value="AND" {{ 'selected' if connector=='AND' }}>AND (모두 만족)</option>
+        <option value="OR" {{ 'selected' if connector=='OR' }}>OR (하나라도)</option>
+      </select>
+    </label>
+    <label>정렬
+      <select name="sort">
+        <option value="recent" {{ 'selected' if sort=='recent' }}>최신순</option>
+        <option value="price_asc" {{ 'selected' if sort=='price_asc' }}>가격 낮은순</option>
+        <option value="price_desc" {{ 'selected' if sort=='price_desc' }}>가격 높은순</option>
+      </select>
+    </label>
+    <button type="submit">검색</button>
+    <a class="btn-link" href="{{ url_for('search_home') }}">초기화</a>
+  </div>
+</form>
+
+<details class="sql-box"><summary>실행된 SQL 보기</summary><pre>{{ sql }}</pre></details>
+
+<p class="count">총 {{ items|length }}건</p>
+<div class="card-grid">
+  {% for it in items %}
+  <a class="card" href="{{ url_for('item_detail', cno=it.CNO, item_no=it.ITEMNO) }}">
+    <div class="thumb">
+      {% if it.HAS_PIC %}
+        <img src="{{ url_for('item_image', cno=it.CNO, item_no=it.ITEMNO, idx=1) }}" alt="">
+      {% else %}<span class="noimg">이미지 없음</span>{% endif %}
+    </div>
+    <div class="card-body">
+      <div class="title">{{ it.TITLE }}</div>
+      <div class="price">{{ "{:,}".format(it.PRICE) }}원</div>
+      <div class="meta">{{ it.TRADEPLACE }} · {{ it.CATEGORY }}</div>
+      <span class="badge
+        {{ 'on-sale' if it.SELLSTATUS=='판매 중' else 'reserved' if it.SELLSTATUS=='예약 중' else 'done' }}">
+        {{ it.SELLSTATUS }}
+      </span>
+    </div>
+  </a>
+  {% else %}
+  <p>검색 결과가 없습니다.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{# 오류 안내 페이지(403/404/500 공용). 받는 값: code·message.
+   큰 숫자 코드와 안내 문구를 보여 주고, 로그인 상태에 맞는 홈으로 가는 링크를 준다. #}
+{% block title %}오류 {{ code }}{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-code">{{ code }}</div>
+  <p class="error-msg">{{ message }}</p>
+  <a class="error-home" href="{{ url_for('search_home') if me and not is_admin else url_for('admin_stats') if is_admin else url_for('login') }}">
+    홈으로 돌아가기
+  </a>
+</div>
+{% endblock %}

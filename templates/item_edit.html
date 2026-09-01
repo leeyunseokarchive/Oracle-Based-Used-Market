@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{# 물품 수정 폼. 받는 값: item(기존 값)·categories·form·error.
+   각 칸은 'form 입력값 → 없으면 기존 item 값' 순으로 채운다. 이미지는 이 화면에서 바꾸지 않는다. #}
+{% block title %}물품 수정{% endblock %}
+{% block content %}
+<h1>물품 수정</h1>
+<form class="form" method="post">
+  <label>제목 <input type="text" name="title" value="{{ form.get('title', item.title) }}" required maxlength="100"></label>
+  <label>카테고리
+    <select name="category">
+      {% for c in categories %}<option value="{{ c }}" {{ 'selected' if (form.get('category', item.category))==c }}>{{ c }}</option>{% endfor %}
+      <option value="기타" {{ 'selected' if (form.get('category', item.category))=='기타' }}>기타</option>
+    </select>
+  </label>
+  <label>가격(원) <input type="number" name="price" value="{{ form.get('price', item.price) }}" required min="0"></label>
+  <label>거래 희망 장소 <input type="text" name="tradePlace" value="{{ form.get('tradePlace', item.tradePlace or '') }}"></label>
+  <label>상세 설명 <textarea name="description" maxlength="300" rows="4">{{ form.get('description', item.description or '') }}</textarea></label>
+  <p class="note">※ 이미지는 이 화면에서 변경되지 않습니다(기존 이미지 유지).</p>
+  {% if error %}<p class="err">{{ error }}</p>{% endif %}
+  <button type="submit">수정 완료</button>
+</form>
+{% endblock %}

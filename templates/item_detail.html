@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{# 물품 상세. 받는 값: item·is_seller·requests.
+   - 판매자(is_seller)가 보면: 들어온 구매요청 표 + 승인 버튼, 그리고 수정/삭제.
+   - 구매자가 보면: 1:1 채팅하기 + (판매 중일 때) 구매요청 보내기 폼. #}
+{% block title %}{{ item.title }}{% endblock %}
+{% block content %}
+<div class="detail">
+  <div class="images">
+    {% for idx in [1,2,3] %}
+      {% if item['has_pic' ~ idx] %}
+        <img src="{{ url_for('item_image', cno=item.cno, item_no=item.itemNo, idx=idx) }}" alt="">
+      {% endif %}
+    {% endfor %}
+    {% if not (item.has_pic1 or item.has_pic2 or item.has_pic3) %}
+      <span class="noimg big">이미지 없음</span>
+    {% endif %}
+  </div>
+
+  <div class="info">
+    <h1>{{ item.title }}
+      <span class="badge {{ 'on-sale' if item.sellStatus=='판매 중' else 'reserved' if item.sellStatus=='예약 중' else 'done' }}">{{ item.sellStatus }}</span>
+    </h1>
+    <p class="price">{{ "{:,}".format(item.price) }}원</p>
+    <p class="meta">판매자 {{ item.seller_nick }} · {{ item.category }} · {{ item.tradePlace }}</p>
+    <p class="desc">{{ item.description }}</p>
+    {% if item.finalPrice %}<p class="final">최종 거래 금액: {{ "{:,}".format(item.finalPrice) }}원</p>{% endif %}
+
+    {% if is_seller %}
+      <h2>들어온 구매 요청 ({{ requests|length }})</h2>
+      <table class="tbl">
+        <tr><th>요청자</th><th>요청 금액</th><th>메시지</th><th>요청일시</th><th></th></tr>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r.NICKNAME }} ({{ r.REQUESTCNO }})</td>
+          <td>{{ "{:,}".format(r.REQPRICE) }}원</td>
+          <td>{{ r.REQMESSAGE }}</td>
+          <td>{{ r.REQDATETIME.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if item.sellStatus=='판매 중' %}
+            <form method="post" action="{{ url_for('approve_request', cno=item.cno, item_no=item.itemNo) }}">
+              <input type="hidden" name="buyer" value="{{ r.REQUESTCNO }}">
+              <button class="approve">승인</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">아직 구매 요청이 없습니다.</td></tr>
+        {% endfor %}
+      </table>
+
+      <div class="owner-actions">
+        <a class="btn-edit" href="{{ url_for('item_edit', cno=item.cno, item_no=item.itemNo) }}">수정</a>
+        <form method="post" action="{{ url_for('item_delete', cno=item.cno, item_no=item.itemNo) }}"
+              onsubmit="return confirm('정말 이 물품을 삭제하시겠습니까? 관련 구매요청·채팅도 함께 삭제됩니다.');" class="inline">
+          <button type="submit" class="btn-delete">삭제</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="detail-actions">
+        <form method="post" action="{{ url_for('start_chat', cno=item.cno, item_no=item.itemNo) }}" class="inline">
+          <button type="submit" class="chat-btn">💬 1:1 채팅하기</button>
+        </form>
+        {% if item.sellStatus=='판매 중' %}
+        <button type="button" class="req-btn" onclick="document.getElementById('reqForm').scrollIntoView({behavior:'smooth'});document.querySelector('#reqForm input').focus();">구매 요청하기</button>
+        {% endif %}
+      </div>
+
+      {% if item.sellStatus=='판매 중' %}
+      <h2>구매 요청 보내기</h2>
+      <form id="reqForm" method="post" action="{{ url_for('create_request', cno=item.cno, item_no=item.itemNo) }}" class="form">
+        <label>제시 금액(원) <input type="number" name="reqPrice" required min="0"></label>
+        <label>메시지 <input type="text" name="reqMessage" maxlength="1000"></label>
+        <button type="submit">구매 요청</button>
+      </form>
+      {% else %}
+        <p class="note">현재 이 물품은 '{{ item.sellStatus }}' 상태라 구매 요청을 받을 수 없습니다. 판매자와 1:1 채팅으로 문의해 보세요.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

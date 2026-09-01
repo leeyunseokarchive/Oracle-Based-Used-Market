@@ -1,0 +1,41 @@
+{# 모든 화면의 공통 레이아웃(부모 템플릿). 다른 템플릿이 {% extends "base.html" %} 로 상속한다.
+   - 로그인 상태(me)면 상단바(메뉴)를 보여 주고, is_admin 여부로 메뉴 구성을 바꾼다.
+   - flash() 안내 메시지를 본문 위에 출력한다.
+   - 각 화면의 실제 내용은 아래 {% block content %} 자리에 채워진다. #}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}중고거래 플랫폼{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% if me %}
+  <header class="topbar {{ 'admin-bar' if is_admin }}">
+    <a class="brand" href="{{ url_for('search_home') }}">{% include "_logo.html" %}<span class="brand-name">중고마켓</span></a>
+    <nav>
+      {% if is_admin %}
+        <a href="{{ url_for('admin_stats') }}">통계</a>
+        <a href="{{ url_for('admin_db_dump') }}">DB 내용</a>
+      {% else %}
+        <a href="{{ url_for('search_home') }}">검색 홈</a>
+        <a href="{{ url_for('item_register') }}">물품등록</a>
+        <a href="{{ url_for('chat_list') }}">채팅하기</a>
+        <a href="{{ url_for('mypage_seller') }}">마이페이지</a>
+      {% endif %}
+    </nav>
+    <span class="who">{{ my_nick }} ({{ me }}) <a href="{{ url_for('logout') }}">로그아웃</a></span>
+  </header>
+  {% endif %}
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

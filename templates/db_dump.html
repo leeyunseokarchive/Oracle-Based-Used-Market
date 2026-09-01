@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{# 관리자 'DB 내용' 화면(보고서 7-1). 받는 값: tables=[{table, columns, rows}, ...].
+   테이블마다 제목과 행 수를 쓰고, 컬럼/행을 표로 출력한다(사진은 길이만 표시됨). #}
+{% block title %}DB 테이블 내용{% endblock %}
+{% block content %}
+<h1>구축된 DB의 각 테이블 내용 (7-1)</h1>
+<p class="note">BLOB(이미지) 컬럼은 길이만 표시합니다.</p>
+{% for t in tables %}
+<section>
+  <h2>{{ t.table }} ({{ t.rows|length }} rows)</h2>
+  <div class="scroll-x">
+    <table class="tbl small">
+      <tr>{% for c in t.columns %}<th>{{ c }}</th>{% endfor %}</tr>
+      {% for row in t.rows %}
+      <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </table>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

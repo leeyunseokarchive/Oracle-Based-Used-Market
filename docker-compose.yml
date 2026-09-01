@@ -1,0 +1,24 @@
+# Oracle Database 23ai Free 컨테이너 (Apple Silicon/arm64 네이티브 지원)
+# - gvenzl/oracle-free 이미지는 23ai Free 를 간편하게 띄울 수 있게 해 준다.
+# - APP_USER/APP_USER_PASSWORD 로 일반 사용자 스키마를 자동 생성한다.
+# - SQL Developer 에서도 동일하게 localhost:1521 / service=FREEPDB1 로 접속 가능.
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: tp_oracle
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: oracle          # SYS/SYSTEM 비밀번호
+      APP_USER: tpuser                 # 데모용 애플리케이션 스키마
+      APP_USER_PASSWORD: tppw
+    volumes:
+      - tp_oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  tp_oracle_data:

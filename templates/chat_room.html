@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{# 채팅방. 받는 값: room(방 정보 + 내 역할 role)·messages(메시지들).
+   내가 보낸 말풍선은 오른쪽(mine), 상대 것은 왼쪽(theirs)에 둔다.
+   내가 판매자(role='S')이고 물품이 예약 중이면 '거래 완료 처리' 폼을 함께 보여 준다. #}
+{% block title %}채팅 - {{ room.title }}{% endblock %}
+{% block content %}
+<div class="chat-header">
+  <h1>{{ room.title }}</h1>
+  <span class="meta">{{ room.partner }} 님 · 내 역할: {{ '판매자' if room.role=='S' else '구매자' }}
+    · 물품 상태: <span class="badge {{ 'on-sale' if room.sellStatus=='판매 중' else 'reserved' if room.sellStatus=='예약 중' else 'done' }}">{{ room.sellStatus }}</span></span>
+
+  {# 판매자에게만, 예약 중일 때 거래 완료 버튼 노출 (TP-6) #}
+  {% if room.role=='S' and room.sellStatus=='예약 중' %}
+  <form method="post" action="{{ url_for('complete_trade', cno=room.CNO, item_no=room.ITEMNO) }}" class="inline">
+    <input type="number" name="finalPrice" placeholder="최종 거래 금액" required min="0">
+    <button class="complete">거래 완료 처리</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="messages">
+  {% for m in messages %}
+  <div class="msg {{ 'mine' if m.SENDER == room.role else 'theirs' }}">
+    <div class="bubble">{{ m.CONTENT }}</div>
+    <div class="msg-meta">
+      {{ m.SENTDATETIME.strftime('%m-%d %H:%M') }}
+      {% if m.SENDER == room.role %}
+        <span class="read-state">{{ '읽음' if m.ISREAD=='Y' else '안읽음' }}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<form class="send-form" method="post" action="{{ url_for('chat_send', room_no=room.ROOMNO) }}">
+  <input type="text" name="content" maxlength="2000" placeholder="메시지 입력 (최대 2000자)" autofocus autocomplete="off">
+  <button type="submit">전송</button>
+</form>
+{% endblock %}

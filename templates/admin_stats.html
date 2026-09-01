@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{# 관리자 통계 화면. 받는 값: (g_cols,g_rows)=그룹함수(ROLLUP) 결과, (w_cols,w_rows)=윈도우함수 결과.
+   각각 표로 그리며, ROLLUP 표에서는 '소계/합계' 행에 별도 클래스(total/subtotal)를 준다. #}
+{% block title %}관리자 통계{% endblock %}
+{% block content %}
+<h1>통계 대시보드</h1>
+<p class="admin-title">전체 거래 현황 및 인기 물품 데이터를 실시간으로 모니터링합니다.</p>
+
+<section>
+  <h2>① 그룹 함수(ROLLUP) — 지역·카테고리별 거래 활성도</h2>
+  <p class="note">거래 완료된 물품을 지역·카테고리로 ROLLUP 집계하여 소계/합계를 함께 본다.</p>
+  <table class="tbl">
+    <tr>{% for c in g_cols %}<th>{{ c }}</th>{% endfor %}</tr>
+    {% for r in g_rows %}
+    <tr class="{{ 'total' if ('합계' in (r[g_cols[0]]|string) or '총계' in (r[g_cols[0]]|string)) else 'subtotal' if '소계' in (r[g_cols[1]]|string) }}">
+      {% for c in g_cols %}<td>{{ r[c] }}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</section>
+
+<section>
+  <h2>② 윈도우 함수 — 판매자별 인기순위 & 물품별 요청 누적</h2>
+  <p class="note">판매자(닉네임·회원번호)를 받은 요청 총합으로 RANK(인기순위) 매기고, 그 아래 물품들을 나열하며 판매자별 누적 요청 수(PARTITION BY 판매자 + SUM OVER)를 보여준다.</p>
+  <table class="tbl">
+    <tr>{% for c in w_cols %}<th>{{ c }}</th>{% endfor %}</tr>
+    {% for r in w_rows %}
+    <tr>{% for c in w_cols %}<td>{{ r[c] }}</td>{% endfor %}</tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

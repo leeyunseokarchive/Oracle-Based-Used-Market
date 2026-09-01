@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{# 물품 등록 폼. 받는 값: categories(카테고리 목록)·form(다시 그릴 입력값)·error.
+   enctype="multipart/form-data" 라야 사진 파일(pic1~3)을 업로드할 수 있다. #}
+{% block title %}물품 등록{% endblock %}
+{% block content %}
+<h1>물품 등록</h1>
+<form class="form" method="post" enctype="multipart/form-data">
+  <label>제목 <input type="text" name="title" value="{{ form.get('title','') }}" required maxlength="100"></label>
+  <label>카테고리
+    <select name="category">
+      {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+      <option value="기타">기타</option>
+    </select>
+  </label>
+  <label>가격(원) <input type="number" name="price" value="{{ form.get('price','') }}" required min="0"></label>
+  <label>거래 희망 장소 <input type="text" name="tradePlace" value="{{ form.get('tradePlace','') }}"></label>
+  <label>상세 설명 <textarea name="description" maxlength="300" rows="4">{{ form.get('description','') }}</textarea></label>
+  <fieldset>
+    <legend>이미지 (최대 3장)</legend>
+    <input type="file" name="pic1" accept="image/*">
+    <input type="file" name="pic2" accept="image/*">
+    <input type="file" name="pic3" accept="image/*">
+  </fieldset>
+  {% if error %}<p class="err">{{ error }}</p>{% endif %}
+  <button type="submit">등록 완료</button>
+</form>
+{% endblock %}

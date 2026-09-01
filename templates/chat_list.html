@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{# 채팅 목록. 받는 값: rooms(내가 참여한 방들). 방마다 상대 닉네임·내 역할과,
+   안 읽은 메시지가 있으면 'unread' 배지를 보여 준다. #}
+{% block title %}채팅 목록{% endblock %}
+{% block content %}
+<h1>채팅 목록</h1>
+<ul class="chat-rooms">
+  {% for r in rooms %}
+  <li>
+    <a href="{{ url_for('chat_room', room_no=r.ROOMNO) }}">
+      <span class="room-title">{{ r.TITLE }}</span>
+      <span class="room-partner">{{ r.partner }} 님과의 대화
+        ({{ '판매자' if r.role=='S' else '구매자' }} 입장)</span>
+      {% if r.unread > 0 %}<span class="unread">안 읽음 {{ r.unread }}</span>{% endif %}
+    </a>
+  </li>
+  {% else %}
+  <li>참여 중인 채팅방이 없습니다.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
