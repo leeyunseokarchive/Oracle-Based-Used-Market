@@ -5,6 +5,7 @@
 ![Oracle](https://img.shields.io/badge/Oracle_DB-23ai_Free-F80000?logo=oracle&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+[![CI](https://github.com/leeyunseokarchive/Oracle-Based-Used-Market/actions/workflows/ci.yml/badge.svg)](https://github.com/leeyunseokarchive/Oracle-Based-Used-Market/actions/workflows/ci.yml)
 
 A full-stack online marketplace built on **Flask + Oracle Database 23ai**, covering the entire trade lifecycle — search, listing, purchase requests, 1:1 chat, and transactional approve/complete flows — with admin statistics.
 

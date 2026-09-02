@@ -12,7 +12,6 @@
 이는 정상이므로 무시한다(아래 run_file 의 ignore_missing 참고).
 """
 import os
-import re
 import sys
 
 import oracledb
