@@ -1,4 +1,4 @@
-# 🛒 Used Market — Oracle-Based Marketplace Platform
+# Used Market — Oracle-Based Marketplace Platform
 
 ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask&logoColor=white)
@@ -11,7 +11,7 @@ A full-stack online marketplace built on **Flask + Oracle Database 23ai**, cover
 
 ---
 
-## ✨ Highlights
+## Highlights
 
 - **Transaction-safe state machine** — every trade step (request → approve → reserve → complete) runs inside a DB transaction, so partial updates never leave the data inconsistent
 - **Dynamic SQL search engine** — keyword search supports AND/OR/NOT combinations plus price/date sorting, built by composing SQL conditions at request time
@@ -19,7 +19,7 @@ A full-stack online marketplace built on **Flask + Oracle Database 23ai**, cover
 - **Service-layer architecture** — 6 independent service modules (item, purchase, chat, customer, stats, dump) sit over a pooled `python-oracledb` connection layer
 - **One-command reproduction** — `docker compose up -d` + a schema/seed script gets a fully working Oracle instance from zero
 
-## 🧩 Features
+## Features
 
 | Feature | Description |
 |---|---|
@@ -32,7 +32,7 @@ A full-stack online marketplace built on **Flask + Oracle Database 23ai**, cover
 | Auto-expiry | Reservations past a 48h timeout are lazily reverted to "for sale" — no scheduler needed |
 | Admin stats | Sales/trade statistics by category (GROUP BY aggregation) |
 
-## 🏗 Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
@@ -42,7 +42,7 @@ flowchart LR
     Pool --> DB[("Oracle Database 23ai<br/>(Docker)")]
 ```
 
-## 🔄 Item state machine
+## Item state machine
 
 ```mermaid
 stateDiagram-v2
@@ -53,7 +53,7 @@ stateDiagram-v2
     Completed --> [*]
 ```
 
-## 📸 Screenshots
+## Screenshots
 
 | Search home | Item detail (3 photos) |
 |---|---|
@@ -71,7 +71,7 @@ stateDiagram-v2
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 > Prerequisites: Docker (or colima), Python 3.8+
 
@@ -119,14 +119,14 @@ Open **http://127.0.0.1:5001** in your browser.
 
 ---
 
-## 🧪 Test accounts
+## Test accounts
 
 | Role | Member ID | Password |
 |---|---|---|
 | Member | `C1` – `C5` | `pw1` – `pw5` |
 | Admin | `c0` | `admin` |
 
-## 📁 Project structure
+## Project structure
 
 ```
 .
@@ -147,6 +147,6 @@ Open **http://127.0.0.1:5001** in your browser.
 └── docs/                    # UI screenshots
 ```
 
-## 📄 License
+## License
 
 MIT — see [LICENSE](./LICENSE).
